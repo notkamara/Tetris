@@ -1,2 +1,2 @@
 # Tetris
-Tetris using Pygame in Python 2
+Tetris using Pygame
