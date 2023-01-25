@@ -13,7 +13,8 @@ pygame.display.set_caption("Tetris Clone")
 
 normalisedX = 0
 
-fps = 5
+fps = 30
+
 clock = pygame.time.Clock()
 
 i = [(0,0,0),(0,0,0),(0,0,0),(0,0,0),
@@ -50,6 +51,7 @@ lWallCollided = False
 rWallCollided = False
 
 objectPos = 0
+dropCounter = 0
 
 initShape = True
 
@@ -189,15 +191,19 @@ while not gameExit:
   
   if rotC == True:
     currentShape = rotateC(currentShape)
+    rotC = False
   if rotCC == True:
     currentShape = rotateCC(currentShape)
+    rotCC = False
 
   if moveLeft == True:
     if lWallCollided == False:
-      currentPos =(currentPos[0] - 1, currentPos[1])     
+      currentPos =(currentPos[0] - 1, currentPos[1])
+      moveLeft = False
   if moveRight == True:
     if rWallCollided == False:
       currentPos = (currentPos[0] + 1, currentPos[1])
+      moveRight = False
   
   for x in range(0, 9):
     if len(currentShape) == 9:
@@ -233,19 +239,21 @@ while not gameExit:
         if gridBuffer[objectPos + 10] != (0,0,0):
           initShape = True
           
-      if objectPos + 1 > ((objectPos / 10) * 10) + 9:
-        rWallCollided = True
-##      if gridBuffer[objectPos + 1] != (0,0,0):
-##        rWallCollided = True
+#       if objectPos + 1 > ((objectPos / 10) * 10) + 9:
+#         rWallCollided = True
+# ##      if gridBuffer[objectPos + 1] != (0,0,0):
+# ##        rWallCollided = True
         
-      if objectPos - 1 < (objectPos / 10) * 10:
-        lWallCollided = True
+#       if objectPos - 1 < (objectPos / 10) * 10:
+#         lWallCollided = True
 ##      if gridBuffer[objectPos - 1] != (0,0,0):
 ##        lWallCollided = True     
 
       gridBuffer[objectPos] = currentShape[x]
-
-  currentPos = (currentPos[0], currentPos[1] + 1)
+  dropCounter += 1
+  if dropCounter == fps/2:
+    currentPos = (currentPos[0], currentPos[1] + 1)
+    dropCounter = 0
   render()
   clock.tick(fps)
 pygame.quit()
