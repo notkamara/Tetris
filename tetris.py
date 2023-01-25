@@ -106,37 +106,6 @@ def rotateCC(shape):
               ,shape[0],shape[4],shape[8],shape[12])
   return newShape
 
-##def getKey():
-##  gameExit = False
-##  print "Yo wassup, hello."
-##  while gameExit == False:
-##    for event in pygame.event.get():
-##      if event.type == pygame.QUIT:
-##        gameExit = True
-##      if event.type == KEYDOWN:
-##        if event.key == K_UP:
-##          rotC = True
-##        elif event.key == K_DOWN:
-##          rotC = True
-##        elif event.key == K_LEFT:
-##          moveLeft = True
-##        elif event.key == K_RIGHT:
-##          moveRight = True
-##      if event.type == KEYUP:
-##        if event.key == K_UP:
-##          rotC = False
-##        elif event.key == K_DOWN:
-##          rotC = False
-##        elif event.key == K_LEFT:
-##          moveLeft = False
-##        elif event.key == K_RIGHT:
-##          moveRight = False
-##  pygame.quit()
-##  quit()
-
-##thread = threading.Thread(target=getKey)
-##thread.start()
-
 currentShape = j
 
 while not gameExit:
@@ -163,7 +132,18 @@ while not gameExit:
         moveRight = False
 
   if initShape == True:
-    for x in range(0, 200):
+    for y in range(20):
+      clearRow = True
+      for x in range(10):
+        if gridBuffer[(y * 10) + x] == (0,0,0):
+          clearRow = False
+          break
+      if clearRow:
+        for yStart in range(y, 20):
+          for x in range(10):
+            gridBuffer[(yStart * 10) + x] = gridBuffer[((yStart-1) * 10) + x]
+
+    for x in range(200):
       tempBuffer[x] = gridBuffer[x]
     initShape = False
     collided = False
@@ -204,23 +184,23 @@ while not gameExit:
     if rWallCollided == False:
       currentPos = (currentPos[0] + 1, currentPos[1])
       moveRight = False
-  
-  for x in range(0, 9):
+
+  for x in range(len(currentShape)):
     if len(currentShape) == 9:
-      if x >= 3 and x < 6:
+      if x > 2 and x < 6:
         normalisedX = x + 7
-      elif x >= 6:
+      elif x > 5:
         normalisedX = x + 14
       else:
         normalisedX = x
-        
+
     if len(currentShape) == 16:
-      if x >= 4 and x < 8:
+      if x > 3 and x < 8:
         normalisedX = x + 6
-      elif x >= 8 and x < 12:
-        normalisedX = x + 16
-      elif x >= 12:
-        normalisedX = x + 26
+      elif x > 7 and x < 12:
+        normalisedX = x + 12
+      elif x > 11:
+        normalisedX = x + 18
       else:
         normalisedX = x
         
@@ -250,6 +230,7 @@ while not gameExit:
 ##        lWallCollided = True     
 
       gridBuffer[objectPos] = currentShape[x]
+
   dropCounter += 1
   if dropCounter == fps/2:
     currentPos = (currentPos[0], currentPos[1] + 1)
