@@ -49,6 +49,7 @@ t = [(255,128,0),(255,128,0),(255,128,0),
 collided = False
 lWallCollided = False
 rWallCollided = False
+floorCollided = False
 
 objectPos = 0
 dropCounter = 0
@@ -67,6 +68,7 @@ rotC = False
 rotCC = False
 moveLeft = False
 moveRight = False
+moveDown = False
 
 for x in range(0, 200):
   gridBuffer.append((0,0,0))
@@ -121,6 +123,8 @@ while not gameExit:
         moveLeft = True
       elif event.key == K_RIGHT:
         moveRight = True
+      elif event.key == K_SPACE:
+        moveDown = True
     if event.type == KEYUP:
       if event.key == K_UP:
         rotC = False
@@ -130,6 +134,8 @@ while not gameExit:
         moveLeft = False
       elif event.key == K_RIGHT:
         moveRight = False
+      elif event.key == K_SPACE:
+        moveDown = False
 
   if initShape == True:
     for y in range(20):
@@ -139,16 +145,19 @@ while not gameExit:
           clearRow = False
           break
       if clearRow:
-        for yStart in range(y, 20):
+        for yStart in range(y, 0, -1):
           for x in range(10):
-            gridBuffer[(yStart * 10) + x] = gridBuffer[((yStart-1) * 10) + x]
+            gridBuffer[(yStart * 10) + x] = gridBuffer[((yStart - 1) * 10) + x]
 
     for x in range(200):
       tempBuffer[x] = gridBuffer[x]
+
     initShape = False
     collided = False
     lWallCollided = False
     rWallCollided = False
+    floorCollided = False
+
     currentPos = (3,0)
     randomShape = random.randint(0,6)
     if randomShape == 0:
@@ -184,6 +193,9 @@ while not gameExit:
     if rWallCollided == False:
       currentPos = (currentPos[0] + 1, currentPos[1])
       moveRight = False
+  if moveDown == True:
+    if floorCollided == False:
+      currentPos = (currentPos[0], currentPos[1] + 1)
 
   for x in range(len(currentShape)):
     if len(currentShape) == 9:
@@ -207,11 +219,13 @@ while not gameExit:
     if len(currentShape) == 4:
       if x == 2:
         normalisedX = 10
-      elif x == 3:
+      elif x == 3: 
         normalisedX = 11
 
     objectPos = (currentPos[1] * 10) + currentPos[0] + normalisedX
     if currentShape[x] != (0,0,0):
+      if objectPos > 189:
+        floorCollided = True
       if objectPos + 10 > 199:
         initShape = True
         
@@ -232,8 +246,9 @@ while not gameExit:
       gridBuffer[objectPos] = currentShape[x]
 
   dropCounter += 1
-  if dropCounter == fps/2:
-    currentPos = (currentPos[0], currentPos[1] + 1)
+  if dropCounter >= fps/4:
+    if floorCollided == False:
+      currentPos = (currentPos[0], currentPos[1] + 1)
     dropCounter = 0
   render()
   clock.tick(fps)
